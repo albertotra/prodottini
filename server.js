@@ -11,6 +11,8 @@ require('./models/Tipo');
 require('./models/Oggetto');
 
 const app = express();
+
+// Middleware
 app.use(cors());
 app.use(express.json());
 app.use(session({
@@ -24,14 +26,16 @@ function checkAuth(req, res, next) {
   if (req.session.user) {
     return next();
   }
-  if (req.headers.accept && req.headers.accept.includes('application/json')) {
+  // Se la richiesta è API → rispondi JSON
+  if (req.path.startsWith('/api')) {
     return res.status(401).json({ error: 'Non autenticato' });
   }
+  // Se è una pagina → redirect a login
   res.redirect('/login.html');
 }
 
-// Rotta login
-app.post('/login', async (req, res) => {
+// Login
+app.post('/api/login', async (req, res) => {
   const { username, password } = req.body;
   if (username === process.env.ADMIN_USER &&
       await bcrypt.compare(password, process.env.ADMIN_PASS)) {
@@ -41,28 +45,29 @@ app.post('/login', async (req, res) => {
   res.status(401).json({ error: 'Credenziali non valide' });
 });
 
-// Rotta logout
+// Logout
 app.get('/logout', (req, res) => {
   req.session.destroy(() => {
     res.redirect('/login.html');
   });
 });
 
-// Serviamo i file statici pubblici
+// Rotte API protette
+app.use('/api/aree', checkAuth, require('./routes/areaRoutes'));
+app.use('/api/tipi', checkAuth, require('./routes/tipoRoutes'));
+app.use('/api/oggetti', checkAuth, require('./routes/oggettoRoutes'));
+
+// Servizio dei file statici
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Proteggiamo il backoffice
-app.use('/aree', checkAuth, require('./routes/areaRoutes'));
-app.use('/tipi', checkAuth, require('./routes/tipoRoutes'));
-app.use('/oggetti', checkAuth, require('./routes/oggettoRoutes'));
-
-// Se non loggato e prova ad accedere a /index.html → redirect login
+// Protezione della pagina index.html
 app.get('/index.html', checkAuth, (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
+// Avvio server
 sequelize.sync().then(() => {
   app.listen(process.env.PORT || 3000, () => {
-    console.log('Server in ascolto...');
+    console.log(`✅ Server avviato su porta ${process.env.PORT || 3000}`);
   });
 });
