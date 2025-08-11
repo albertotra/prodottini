@@ -24,6 +24,9 @@ function checkAuth(req, res, next) {
   if (req.session.user) {
     return next();
   }
+  if (req.headers.accept && req.headers.accept.includes('application/json')) {
+    return res.status(401).json({ error: 'Non autenticato' });
+  }
   res.redirect('/login.html');
 }
 
