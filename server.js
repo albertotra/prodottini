@@ -66,10 +66,8 @@ app.get('/index.html', checkAuth, (req, res) => {
 });
 
 // Avvio server
-sequelize.sync().then(() => {
+sequelize.sync({ force: true }).then(() => {
   app.listen(process.env.PORT || 3000, () => {
     console.log(`✅ Server avviato su porta ${process.env.PORT || 3000}`);
   });
 });
-
-sequelize.sync({ force: true });
