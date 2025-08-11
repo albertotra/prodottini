@@ -1,177 +1,634 @@
-<html>
+<!DOCTYPE html>
+<html lang="it">
 
 <head>
     <meta charset="UTF-8">
-    <title>Prodottini</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prodottini - Gestione Inventario</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
     <style>
+        :root {
+            --pastel-blue: #E8F4FD;
+            --pastel-green: #E8F5E8;
+            --pastel-pink: #FDE8F4;
+            --pastel-yellow: #FFF9E8;
+            --pastel-purple: #F0E8FD;
+            --pastel-orange: #FFE8D6;
+            
+            --dark-blue: #4A90E2;
+            --dark-green: #5CB85C;
+            --dark-pink: #E91E63;
+            --dark-yellow: #F39C12;
+            --dark-purple: #9B59B6;
+            --dark-orange: #FF6B35;
+        }
+
         body {
-            font-family: Arial, sans-serif;
-            max-width: 800px;
-            margin: auto;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            min-height: 100vh;
         }
 
-        h2 {
-            margin-top: 40px;
+        .navbar {
+            background: linear-gradient(90deg, var(--dark-blue), var(--dark-purple)) !important;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
         }
 
-        form {
-            margin-bottom: 20px;
+        .card {
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            overflow: hidden;
         }
 
-        input,
-        select,
-        button {
-            padding: 5px;
-            margin: 5px;
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
         }
 
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 10px;
+        .card-aree {
+            background: linear-gradient(135deg, var(--pastel-blue), #ffffff);
         }
 
-        table,
-        th,
-        td {
-            border: 1px solid #ccc;
+        .card-aree .card-header {
+            background: var(--dark-blue);
         }
 
-        th,
-        td {
-            padding: 5px;
-            text-align: left;
+        .card-tipologie {
+            background: linear-gradient(135deg, var(--pastel-green), #ffffff);
+        }
+
+        .card-tipologie .card-header {
+            background: var(--dark-green);
+        }
+
+        .card-oggetti {
+            background: linear-gradient(135deg, var(--pastel-pink), #ffffff);
+        }
+
+        .card-oggetti .card-header {
+            background: var(--dark-pink);
+        }
+
+        .card-header {
+            border: none;
+            color: white;
+            font-weight: 600;
+            padding: 1rem 1.5rem;
+        }
+
+        .card-header h3 {
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .card-body {
+            padding: 1.5rem;
+        }
+
+        .form-control, .form-select {
+            border-radius: 10px;
+            border: 2px solid #e9ecef;
+            transition: all 0.3s ease;
+        }
+
+        .form-control:focus, .form-select:focus {
+            border-color: var(--dark-blue);
+            box-shadow: 0 0 0 0.2rem rgba(74, 144, 226, 0.25);
+        }
+
+        .btn-primary {
+            background: linear-gradient(45deg, var(--dark-blue), var(--dark-purple));
+            border: none;
+            border-radius: 10px;
+            padding: 0.5rem 1.5rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .btn-delete {
+            background: linear-gradient(45deg, #dc3545, #c82333);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 0.25rem 0.75rem;
+            font-size: 0.875rem;
+            transition: all 0.3s ease;
+        }
+
+        .btn-delete:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 3px 10px rgba(220, 53, 69, 0.3);
+        }
+
+        .table {
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .table thead th {
+            background: rgba(255,255,255,0.8);
+            border: none;
+            font-weight: 600;
+            color: #333;
+            padding: 1rem 0.75rem;
+        }
+
+        .table tbody td {
+            border: none;
+            padding: 0.75rem;
+            vertical-align: middle;
+            background: rgba(255,255,255,0.6);
+        }
+
+        .table tbody tr:hover td {
+            background: rgba(255,255,255,0.9);
+        }
+
+        .section-spacing {
+            margin-bottom: 2rem;
+        }
+
+        .form-row {
+            display: flex;
+            gap: 0.5rem;
+            align-items: end;
+            flex-wrap: wrap;
+        }
+
+        .form-row > div {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .stats-badge {
+            background: rgba(255,255,255,0.3);
+            color: white;
+            border-radius: 20px;
+            padding: 0.25rem 0.75rem;
+            font-size: 0.875rem;
+            margin-left: auto;
+        }
+
+        @media (max-width: 768px) {
+            .form-row {
+                flex-direction: column;
+            }
+            
+            .form-row > div {
+                min-width: 100%;
+            }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
         }
     </style>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-
 </head>
 
 <body>
-    <div class="container">
-        <div class="row">
-            <div class="col">
-                <p><a href="/logout">Logout</a></p>
+    <!-- Navbar -->
+    <nav class="navbar navbar-dark mb-4">
+        <div class="container-fluid">
+            <span class="navbar-brand mb-0 h1">
+                <i class="bi bi-box-seam"></i>
+                Prodottini - Gestione Inventario
+            </span>
+            <a href="/logout" class="btn btn-outline-light">
+                <i class="bi bi-box-arrow-right"></i>
+                Logout
+            </a>
+        </div>
+    </nav>
+
+    <div class="container-fluid">
+        <div class="row g-4">
+            
+            <!-- SEZIONE AREE -->
+            <div class="col-lg-4 col-md-6">
+                <div class="card card-aree section-spacing fade-in">
+                    <div class="card-header">
+                        <h3>
+                            <i class="bi bi-geo-alt"></i>
+                            Aree
+                            <span class="stats-badge" id="count-aree">0</span>
+                        </h3>
+                    </div>
+                    <div class="card-body">
+                        <form id="formArea" class="mb-3">
+                            <div class="form-row">
+                                <div>
+                                    <label for="nomeArea" class="form-label">Nome Area</label>
+                                    <input type="text" class="form-control" id="nomeArea" placeholder="Inserisci nome area" required>
+                                </div>
+                                <div style="flex: 0 0 auto;">
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="bi bi-plus-lg"></i>
+                                        Aggiungi
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                        
+                        <div class="table-responsive">
+                            <table class="table table-sm">
+                                <thead>
+                                    <tr>
+                                        <th>Nome</th>
+                                        <th width="100">Azioni</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="listaAree"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SEZIONE TIPOLOGIE -->
+            <div class="col-lg-4 col-md-6">
+                <div class="card card-tipologie section-spacing fade-in">
+                    <div class="card-header">
+                        <h3>
+                            <i class="bi bi-tags"></i>
+                            Tipologie
+                            <span class="stats-badge" id="count-tipologie">0</span>
+                        </h3>
+                    </div>
+                    <div class="card-body">
+                        <form id="formTipo" class="mb-3">
+                            <div class="mb-3">
+                                <label for="areaTipo" class="form-label">Area di appartenenza</label>
+                                <select class="form-select" id="areaTipo" required>
+                                    <option value="">Seleziona Area</option>
+                                </select>
+                            </div>
+                            <div class="form-row">
+                                <div>
+                                    <label for="nomeTipo" class="form-label">Nome Tipologia</label>
+                                    <input type="text" class="form-control" id="nomeTipo" placeholder="Inserisci tipologia" required>
+                                </div>
+                                <div style="flex: 0 0 auto;">
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="bi bi-plus-lg"></i>
+                                        Aggiungi
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                        
+                        <div class="table-responsive">
+                            <table class="table table-sm">
+                                <thead>
+                                    <tr>
+                                        <th>Tipologia</th>
+                                        <th>Area</th>
+                                        <th width="80">Azioni</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="listaTipi"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SEZIONE OGGETTI -->
+            <div class="col-lg-4 col-md-12">
+                <div class="card card-oggetti section-spacing fade-in">
+                    <div class="card-header">
+                        <h3>
+                            <i class="bi bi-box"></i>
+                            Oggetti
+                            <span class="stats-badge" id="count-oggetti">0</span>
+                        </h3>
+                    </div>
+                    <div class="card-body">
+                        <form id="formOggetto" class="mb-3">
+                            <div class="mb-3">
+                                <label for="areaSelezionata" class="form-label">Seleziona Area</label>
+                                <select class="form-select" id="areaSelezionata" onchange="aggiornaCategorie()" required>
+                                    <option value="">Seleziona Area</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label for="tipoOggetto" class="form-label">Tipologia</label>
+                                <select class="form-select" id="tipoOggetto" required>
+                                    <option value="">Seleziona prima un'area</option>
+                                </select>
+                            </div>
+                            <div class="form-row">
+                                <div>
+                                    <label for="nomeOggetto" class="form-label">Nome Oggetto</label>
+                                    <input type="text" class="form-control" id="nomeOggetto" placeholder="Inserisci nome oggetto" required>
+                                </div>
+                                <div style="flex: 0 0 auto;">
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="bi bi-plus-lg"></i>
+                                        Aggiungi
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
             </div>
         </div>
 
-        <h1 class="h1">Prodottini</h1>
-
-        <!-- AREA -->
-        <h2>Gestione Aree</h2>
-        <form id="formArea">
-            <input type="text" id="nomeArea" placeholder="Nome area" required>
-            <button type="submit">Aggiungi Area</button>
-        </form>
-        <ul id="listaAree"></ul>
-
-        <!-- TIPO -->
-        <h2>Gestione Tipologie</h2>
-        <form id="formTipo">
-            <input type="text" id="nomeTipo" placeholder="Nome tipologia" required>
-            <button type="submit">Aggiungi Tipologia</button>
-        </form>
-        <ul id="listaTipi"></ul>
-
-        <!-- OGGETTO -->
-        <h2>Gestione Oggetti</h2>
-        <form id="formOggetto">
-            <input type="text" id="nomeOggetto" placeholder="Nome oggetto" required>
-            <select id="areaOggetto" required></select>
-            <select id="tipoOggetto" required></select>
-            <button type="submit">Aggiungi Oggetto</button>
-        </form>
-        <table class="table table-responsive table-bordered">
-            <thead>
-                <tr>
-                    <th>Nome</th>
-                    <th>Area</th>
-                    <th>Tipologia</th>
-                    <th></th>
-                </tr>
-            </thead>
-            <tbody id="listaOggetti"></tbody>
-        </table>
-
+        <!-- TABELLA OGGETTI A TUTTA LARGHEZZA -->
+        <div class="row mt-4">
+            <div class="col-12">
+                <div class="card fade-in">
+                    <div class="card-header" style="background: var(--dark-pink);">
+                        <h3>
+                            <i class="bi bi-list-ul"></i>
+                            Elenco Completo Oggetti
+                        </h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th><i class="bi bi-box me-2"></i>Nome Oggetto</th>
+                                        <th><i class="bi bi-tag me-2"></i>Categoria</th>
+                                        <th><i class="bi bi-geo-alt me-2"></i>Area</th>
+                                        <th width="120">Azioni</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="listaOggetti"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
+
+    <!-- Toast per notifiche -->
+    <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 1050">
+        <div id="liveToast" class="toast hide" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="toast-header">
+                <i class="bi bi-check-circle text-success me-2"></i>
+                <strong class="me-auto">Successo</strong>
+                <button type="button" class="btn-close" data-bs-dismiss="toast"></button>
+            </div>
+            <div class="toast-body" id="toast-message">
+                Operazione completata con successo!
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         const API = `${window.location.origin}/api`;
 
+        // Funzione per mostrare toast
+        function showToast(message) {
+            document.getElementById('toast-message').textContent = message;
+            const toast = new bootstrap.Toast(document.getElementById('liveToast'));
+            toast.show();
+        }
+
+        // Funzione per aggiornare i contatori
+        function updateCounters() {
+            const areeCount = document.querySelectorAll('#listaAree tr').length;
+            const tipiCount = document.querySelectorAll('#listaTipi tr').length;
+            const oggettiCount = document.querySelectorAll('#listaOggetti tr').length;
+            
+            document.getElementById('count-aree').textContent = areeCount;
+            document.getElementById('count-tipologie').textContent = tipiCount;
+            document.getElementById('count-oggetti').textContent = oggettiCount;
+        }
+
         // --- AREE ---
         async function caricaAree() {
-            const res = await fetch(`${API}/aree`);
-            const aree = await res.json();
-            document.getElementById('listaAree').innerHTML = aree.map(a => `<li>${a.nome}</li>`).join('');
-            document.getElementById('areaOggetto').innerHTML = aree.map(a => `<option value="${a.id}">${a.nome}</option>`).join('');
+            try {
+                const res = await fetch(`${API}/aree`);
+                const aree = await res.json();
+                
+                // Popola tabella aree
+                document.getElementById('listaAree').innerHTML = aree.map(a => `
+                    <tr>
+                        <td>${a.nome}</td>
+                        <td>
+                            <button class="btn-delete" onclick="eliminaArea(${a.id})" title="Elimina area">
+                                <i class="bi bi-trash"></i>
+                            </button>
+                        </td>
+                    </tr>
+                `).join('');
+                
+                // Popola select per tipologie
+                document.getElementById('areaTipo').innerHTML = 
+                    '<option value="">Seleziona Area</option>' + 
+                    aree.map(a => `<option value="${a.id}">${a.nome}</option>`).join('');
+                
+                // Popola select per oggetti
+                document.getElementById('areaSelezionata').innerHTML = 
+                    '<option value="">Seleziona Area</option>' + 
+                    aree.map(a => `<option value="${a.id}">${a.nome}</option>`).join('');
+                
+                updateCounters();
+            } catch (error) {
+                console.error('Errore nel caricamento aree:', error);
+            }
         }
 
         document.getElementById('formArea').addEventListener('submit', async e => {
             e.preventDefault();
-            await fetch(`${API}/aree`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ nome: document.getElementById('nomeArea').value })
-            });
-            document.getElementById('nomeArea').value = '';
-            caricaAree();
+            try {
+                await fetch(`${API}/aree`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ nome: document.getElementById('nomeArea').value })
+                });
+                document.getElementById('nomeArea').value = '';
+                await caricaAree();
+                showToast('Area aggiunta con successo!');
+            } catch (error) {
+                console.error('Errore nell\'aggiunta area:', error);
+            }
         });
+
+        async function eliminaArea(id) {
+            if (confirm('Sei sicuro di voler eliminare questa area? Verranno eliminate anche tutte le tipologie e oggetti associati.')) {
+                try {
+                    await fetch(`${API}/aree/${id}`, { method: 'DELETE' });
+                    await Promise.all([caricaAree(), caricaTipi(), caricaOggetti()]);
+                    showToast('Area eliminata con successo!');
+                } catch (error) {
+                    console.error('Errore nell\'eliminazione area:', error);
+                }
+            }
+        }
 
         // --- TIPI ---
         async function caricaTipi() {
-            const res = await fetch(`${API}/tipi`);
-            const tipi = await res.json();
-            document.getElementById('listaTipi').innerHTML = tipi.map(t => `<li>${t.nome}</li>`).join('');
-            document.getElementById('tipoOggetto').innerHTML = tipi.map(t => `<option value="${t.id}">${t.nome}</option>`).join('');
+            try {
+                const res = await fetch(`${API}/tipi`);
+                const tipi = await res.json();
+                
+                document.getElementById('listaTipi').innerHTML = tipi.map(t => `
+                    <tr>
+                        <td>${t.nome}</td>
+                        <td><span class="badge" style="background-color: var(--pastel-blue); color: var(--dark-blue);">${t.Area?.nome || 'N/A'}</span></td>
+                        <td>
+                            <button class="btn-delete" onclick="eliminaTipo(${t.id})" title="Elimina tipologia">
+                                <i class="bi bi-trash"></i>
+                            </button>
+                        </td>
+                    </tr>
+                `).join('');
+                
+                updateCounters();
+            } catch (error) {
+                console.error('Errore nel caricamento tipologie:', error);
+            }
         }
 
         document.getElementById('formTipo').addEventListener('submit', async e => {
             e.preventDefault();
-            await fetch(`${API}/tipi`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ nome: document.getElementById('nomeTipo').value })
-            });
-            document.getElementById('nomeTipo').value = '';
-            caricaTipi();
+            try {
+                await fetch(`${API}/tipi`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ 
+                        nome: document.getElementById('nomeTipo').value,
+                        areaId: document.getElementById('areaTipo').value
+                    })
+                });
+                document.getElementById('nomeTipo').value = '';
+                document.getElementById('areaTipo').value = '';
+                await caricaTipi();
+                showToast('Tipologia aggiunta con successo!');
+            } catch (error) {
+                console.error('Errore nell\'aggiunta tipologia:', error);
+            }
         });
+
+        async function eliminaTipo(id) {
+            if (confirm('Sei sicuro di voler eliminare questa tipologia? Verranno eliminati anche tutti gli oggetti associati.')) {
+                try {
+                    await fetch(`${API}/tipi/${id}`, { method: 'DELETE' });
+                    await Promise.all([caricaTipi(), caricaOggetti()]);
+                    showToast('Tipologia eliminata con successo!');
+                } catch (error) {
+                    console.error('Errore nell\'eliminazione tipologia:', error);
+                }
+            }
+        }
+
+        // Funzione per aggiornare le categorie in base all'area selezionata
+        async function aggiornaCategorie() {
+            const areaId = document.getElementById('areaSelezionata').value;
+            const selectTipo = document.getElementById('tipoOggetto');
+            
+            if (!areaId) {
+                selectTipo.innerHTML = '<option value="">Seleziona prima un\'area</option>';
+                return;
+            }
+            
+            try {
+                const res = await fetch(`${API}/tipi/area/${areaId}`);
+                const tipi = await res.json();
+                
+                selectTipo.innerHTML = tipi.length > 0 ? 
+                    '<option value="">Seleziona tipologia</option>' + tipi.map(t => `<option value="${t.id}">${t.nome}</option>`).join('') :
+                    '<option value="">Nessuna tipologia per questa area</option>';
+            } catch (error) {
+                console.error('Errore nel caricamento tipologie per area:', error);
+            }
+        }
 
         // --- OGGETTI ---
         async function caricaOggetti() {
-            const res = await fetch(`${API}/oggetti`);
-            const oggetti = await res.json();
-            document.getElementById('listaOggetti').innerHTML = oggetti.map(o => `
-        <tr>
-            <td>${o.nome}</td>
-            <td>${o.Area?.nome || ''}</td>
-            <td>${o.Tipo?.nome || ''}</td>
-            <td>${o.id || ''}</td>
-        </tr>
-    `).join('');
+            try {
+                const res = await fetch(`${API}/oggetti`);
+                const oggetti = await res.json();
+                document.getElementById('listaOggetti').innerHTML = oggetti.map(o => `
+                    <tr>
+                        <td>
+                            <i class="bi bi-box text-muted me-2"></i>
+                            ${o.nome}
+                        </td>
+                        <td>
+                            <span class="badge" style="background-color: var(--pastel-green); color: var(--dark-green);">
+                                ${o.Tipo?.nome || 'N/A'}
+                            </span>
+                        </td>
+                        <td>
+                            <span class="badge" style="background-color: var(--pastel-blue); color: var(--dark-blue);">
+                                ${o.Tipo?.Area?.nome || 'N/A'}
+                            </span>
+                        </td>
+                        <td>
+                            <button class="btn-delete" onclick="eliminaOggetto(${o.id})" title="Elimina oggetto">
+                                <i class="bi bi-trash"></i>
+                            </button>
+                        </td>
+                    </tr>
+                `).join('');
+                
+                updateCounters();
+            } catch (error) {
+                console.error('Errore nel caricamento oggetti:', error);
+            }
         }
 
         document.getElementById('formOggetto').addEventListener('submit', async e => {
             e.preventDefault();
-            await fetch(`${API}/oggetti`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    nome: document.getElementById('nomeOggetto').value,
-                    areaId: document.getElementById('areaOggetto').value,
-                    tipoId: document.getElementById('tipoOggetto').value
-                })
-            });
-            document.getElementById('nomeOggetto').value = '';
-            caricaOggetti();
+            try {
+                await fetch(`${API}/oggetti`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        nome: document.getElementById('nomeOggetto').value,
+                        tipoId: document.getElementById('tipoOggetto').value
+                    })
+                });
+                document.getElementById('nomeOggetto').value = '';
+                document.getElementById('areaSelezionata').value = '';
+                document.getElementById('tipoOggetto').innerHTML = '<option value="">Seleziona prima un\'area</option>';
+                await caricaOggetti();
+                showToast('Oggetto aggiunto con successo!');
+            } catch (error) {
+                console.error('Errore nell\'aggiunta oggetto:', error);
+            }
         });
 
-        // --- INIT ---
-        caricaAree();
-        caricaTipi();
-        caricaOggetti();
+        async function eliminaOggetto(id) {
+            if (confirm('Sei sicuro di voler eliminare questo oggetto?')) {
+                try {
+                    await fetch(`${API}/oggetti/${id}`, { method: 'DELETE' });
+                    await caricaOggetti();
+                    showToast('Oggetto eliminato con successo!');
+                } catch (error) {
+                    console.error('Errore nell\'eliminazione oggetto:', error);
+                }
+            }
+        }
+
+        // --- INIZIALIZZAZIONE ---
+        document.addEventListener('DOMContentLoaded', async () => {
+            await Promise.all([caricaAree(), caricaTipi(), caricaOggetti()]);
+        });
     </script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-
-
 </body>
 
 </html>
