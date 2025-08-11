@@ -71,3 +71,5 @@ sequelize.sync().then(() => {
     console.log(`✅ Server avviato su porta ${process.env.PORT || 3000}`);
   });
 });
+
+sequelize.sync({ force: true });
