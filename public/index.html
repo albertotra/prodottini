@@ -54,45 +54,46 @@
                 <p><a href="/logout">Logout</a></p>
             </div>
         </div>
+
+        <h1 class="h1">Prodottini</h1>
+
+        <!-- AREA -->
+        <h2>Gestione Aree</h2>
+        <form id="formArea">
+            <input type="text" id="nomeArea" placeholder="Nome area" required>
+            <button type="submit">Aggiungi Area</button>
+        </form>
+        <ul id="listaAree"></ul>
+
+        <!-- TIPO -->
+        <h2>Gestione Tipologie</h2>
+        <form id="formTipo">
+            <input type="text" id="nomeTipo" placeholder="Nome tipologia" required>
+            <button type="submit">Aggiungi Tipologia</button>
+        </form>
+        <ul id="listaTipi"></ul>
+
+        <!-- OGGETTO -->
+        <h2>Gestione Oggetti</h2>
+        <form id="formOggetto">
+            <input type="text" id="nomeOggetto" placeholder="Nome oggetto" required>
+            <select id="areaOggetto" required></select>
+            <select id="tipoOggetto" required></select>
+            <button type="submit">Aggiungi Oggetto</button>
+        </form>
+        <table class="table table-responsive table-bordered">
+            <thead>
+                <tr>
+                    <th>Nome</th>
+                    <th>Area</th>
+                    <th>Tipologia</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody id="listaOggetti"></tbody>
+        </table>
+
     </div>
-
-    <h1 class="h1">Prodottini</h1>
-
-    <!-- AREA -->
-    <h2>Gestione Aree</h2>
-    <form id="formArea">
-        <input type="text" id="nomeArea" placeholder="Nome area" required>
-        <button type="submit">Aggiungi Area</button>
-    </form>
-    <ul id="listaAree"></ul>
-
-    <!-- TIPO -->
-    <h2>Gestione Tipologie</h2>
-    <form id="formTipo">
-        <input type="text" id="nomeTipo" placeholder="Nome tipologia" required>
-        <button type="submit">Aggiungi Tipologia</button>
-    </form>
-    <ul id="listaTipi"></ul>
-
-    <!-- OGGETTO -->
-    <h2>Gestione Oggetti</h2>
-    <form id="formOggetto">
-        <input type="text" id="nomeOggetto" placeholder="Nome oggetto" required>
-        <select id="areaOggetto" required></select>
-        <select id="tipoOggetto" required></select>
-        <button type="submit">Aggiungi Oggetto</button>
-    </form>
-    <table>
-        <thead>
-            <tr>
-                <th>Nome</th>
-                <th>Area</th>
-                <th>Tipologia</th>
-            </tr>
-        </thead>
-        <tbody id="listaOggetti"></tbody>
-    </table>
-
     <script>
         const API = `${window.location.origin}/api`;
 
@@ -143,6 +144,7 @@
             <td>${o.nome}</td>
             <td>${o.Area?.nome || ''}</td>
             <td>${o.Tipo?.nome || ''}</td>
+            <td>${o.id || ''}</td>
         </tr>
     `).join('');
         }
