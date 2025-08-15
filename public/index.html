@@ -290,10 +290,16 @@
                 <i class="bi bi-box-seam"></i>
                 Prodottini - Gestione Inventario
             </span>
-            <a href="/logout" class="btn btn-outline-light">
-                <i class="bi bi-box-arrow-right"></i>
-                Logout
-            </a>
+            <div class="d-flex align-items-center">
+                <span class="text-light me-3">
+                    <i class="bi bi-person-circle"></i>
+                    <span id="currentUser">Admin</span>
+                </span>
+                <button onclick="logout()" class="btn btn-outline-light">
+                    <i class="bi bi-box-arrow-right"></i>
+                    Logout
+                </button>
+            </div>
         </div>
     </nav>
 
@@ -862,9 +868,56 @@
             sezione.scrollIntoView({ behavior: 'smooth' });
         }
 
+        // Funzione per logout
+        async function logout() {
+            try {
+                const res = await fetch('/api/logout', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' }
+                });
+                
+                if (res.ok) {
+                    window.location.href = '/login.html';
+                } else {
+                    // Fallback se l'API fallisce
+                    window.location.href = '/logout';
+                }
+            } catch (error) {
+                console.error('Errore durante il logout:', error);
+                // Fallback
+                window.location.href = '/logout';
+            }
+        }
+
+        // Verifica autenticazione all'avvio
+        async function checkAuthentication() {
+            try {
+                const res = await fetch('/api/check-auth');
+                if (!res.ok) {
+                    window.location.href = '/login.html';
+                    return false;
+                }
+                
+                const data = await res.json();
+                if (data.user) {
+                    document.getElementById('currentUser').textContent = data.user;
+                }
+                return true;
+            } catch (error) {
+                console.error('Errore verifica autenticazione:', error);
+                window.location.href = '/login.html';
+                return false;
+            }
+        }
+
         // --- INIZIALIZZAZIONE ---
         document.addEventListener('DOMContentLoaded', async () => {
-            await Promise.all([caricaAree(), caricaTipi(), caricaOggetti()]);
+            // Prima verifica l'autenticazione
+            const isAuthenticated = await checkAuthentication();
+            if (isAuthenticated) {
+                // Poi carica i dati
+                await Promise.all([caricaAree(), caricaTipi(), caricaOggetti()]);
+            }
         });
     </script>
 </body>
