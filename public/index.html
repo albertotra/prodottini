@@ -72,6 +72,22 @@
             background: var(--dark-pink);
         }
 
+        .card-randomizza {
+            background: linear-gradient(135deg, var(--pastel-yellow), #ffffff);
+        }
+
+        .card-randomizza .card-header {
+            background: var(--dark-yellow);
+        }
+
+        .card-risultati {
+            background: linear-gradient(135deg, var(--pastel-orange), #ffffff);
+        }
+
+        .card-risultati .card-header {
+            background: var(--dark-orange);
+        }
+
         .card-header {
             border: none;
             color: white;
@@ -113,6 +129,30 @@
         .btn-primary:hover {
             transform: translateY(-2px);
             box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .btn-random {
+            background: linear-gradient(45deg, var(--dark-yellow), var(--dark-orange));
+            border: none;
+            border-radius: 10px;
+            padding: 0.75rem 2rem;
+            font-weight: 600;
+            color: white;
+            transition: all 0.3s ease;
+            width: 100%;
+            font-size: 1.1rem;
+        }
+
+        .btn-random:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(243, 156, 18, 0.3);
+            color: white;
+        }
+
+        .btn-random:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
         }
 
         .btn-delete {
@@ -180,6 +220,37 @@
             margin-left: auto;
         }
 
+        .random-result {
+            background: rgba(255,255,255,0.9);
+            border-radius: 10px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            border-left: 4px solid var(--dark-orange);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .random-result h5 {
+            color: var(--dark-orange);
+            margin-bottom: 0.5rem;
+        }
+
+        .random-result .object-name {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: var(--dark-blue);
+        }
+
+        .dice-animation {
+            animation: diceRoll 1s ease-in-out;
+        }
+
+        @keyframes diceRoll {
+            0%, 100% { transform: rotate(0deg); }
+            25% { transform: rotate(90deg); }
+            50% { transform: rotate(180deg); }
+            75% { transform: rotate(270deg); }
+        }
+
         @media (max-width: 768px) {
             .form-row {
                 flex-direction: column;
@@ -197,6 +268,16 @@
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(20px); }
             to { opacity: 1; transform: translateY(0); }
+        }
+
+        .pulse-effect {
+            animation: pulse 0.5s ease-in-out;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
         }
     </style>
 </head>
@@ -220,7 +301,7 @@
         <div class="row g-4">
             
             <!-- SEZIONE AREE -->
-            <div class="col-lg-4 col-md-6">
+            <div class="col-lg-3 col-md-6">
                 <div class="card card-aree section-spacing fade-in">
                     <div class="card-header">
                         <h3>
@@ -261,7 +342,7 @@
             </div>
 
             <!-- SEZIONE TIPOLOGIE -->
-            <div class="col-lg-4 col-md-6">
+            <div class="col-lg-3 col-md-6">
                 <div class="card card-tipologie section-spacing fade-in">
                     <div class="card-header">
                         <h3>
@@ -309,7 +390,7 @@
             </div>
 
             <!-- SEZIONE OGGETTI -->
-            <div class="col-lg-4 col-md-12">
+            <div class="col-lg-3 col-md-6">
                 <div class="card card-oggetti section-spacing fade-in">
                     <div class="card-header">
                         <h3>
@@ -345,6 +426,52 @@
                                 </div>
                             </div>
                         </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SEZIONE RANDOMIZZA -->
+            <div class="col-lg-3 col-md-6">
+                <div class="card card-randomizza section-spacing fade-in">
+                    <div class="card-header">
+                        <h3>
+                            <i class="bi bi-dice-6"></i>
+                            Randomizza
+                        </h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label for="areaRandomizza" class="form-label">Seleziona Area</label>
+                            <select class="form-select" id="areaRandomizza" required>
+                                <option value="">Seleziona un'area</option>
+                            </select>
+                        </div>
+                        <button type="button" class="btn btn-random" onclick="randomizzaOggetti()" id="btnRandomizza">
+                            <i class="bi bi-dice-6" id="diceIcon"></i>
+                            Estrai Oggetti Casuali
+                        </button>
+                        <div id="loadingRandomize" class="text-center mt-3" style="display: none;">
+                            <div class="spinner-border text-warning" role="status">
+                                <span class="visually-hidden">Caricamento...</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SEZIONE RISULTATI RANDOMIZZAZIONE -->
+        <div class="row mt-4" id="risultatiSection" style="display: none;">
+            <div class="col-12">
+                <div class="card card-risultati fade-in">
+                    <div class="card-header">
+                        <h3>
+                            <i class="bi bi-star"></i>
+                            Oggetti Estratti Casualmente
+                        </h3>
+                    </div>
+                    <div class="card-body">
+                        <div id="risultatiRandomizzazione"></div>
                     </div>
                 </div>
             </div>
@@ -442,6 +569,11 @@
                 // Popola select per oggetti
                 document.getElementById('areaSelezionata').innerHTML = 
                     '<option value="">Seleziona Area</option>' + 
+                    aree.map(a => `<option value="${a.id}">${a.nome}</option>`).join('');
+                
+                // Popola select per randomizzazione
+                document.getElementById('areaRandomizza').innerHTML = 
+                    '<option value="">Seleziona un\'area</option>' + 
                     aree.map(a => `<option value="${a.id}">${a.nome}</option>`).join('');
                 
                 updateCounters();
@@ -622,6 +754,112 @@
                     console.error('Errore nell\'eliminazione oggetto:', error);
                 }
             }
+        }
+
+        // --- FUNZIONE RANDOMIZZAZIONE ---
+        async function randomizzaOggetti() {
+            const areaId = document.getElementById('areaRandomizza').value;
+            
+            if (!areaId) {
+                alert('Seleziona un\'area per la randomizzazione!');
+                return;
+            }
+
+            // Disabilita il bottone e mostra loading
+            const btn = document.getElementById('btnRandomizza');
+            const diceIcon = document.getElementById('diceIcon');
+            const loading = document.getElementById('loadingRandomize');
+            
+            btn.disabled = true;
+            loading.style.display = 'block';
+            diceIcon.classList.add('dice-animation');
+
+            try {
+                // Ottieni le tipologie dell'area selezionata
+                const resTipi = await fetch(`${API}/tipi/area/${areaId}`);
+                const tipi = await resTipi.json();
+
+                if (tipi.length === 0) {
+                    alert('Nessuna tipologia trovata per questa area!');
+                    return;
+                }
+
+                // Ottieni tutti gli oggetti
+                const resOggetti = await fetch(`${API}/oggetti`);
+                const tuttiOggetti = await resOggetti.json();
+
+                // Filtra gli oggetti per area e raggruppa per tipologia
+                const oggettiPerTipo = {};
+                tipi.forEach(tipo => {
+                    oggettiPerTipo[tipo.id] = {
+                        nome: tipo.nome,
+                        oggetti: tuttiOggetti.filter(obj => obj.tipoId === tipo.id)
+                    };
+                });
+
+                // Simula un delay per l'effetto visivo
+                await new Promise(resolve => setTimeout(resolve, 1500));
+
+                // Estrai un oggetto casuale per ogni tipologia che ha oggetti
+                const risultati = [];
+                for (const tipoId in oggettiPerTipo) {
+                    const gruppo = oggettiPerTipo[tipoId];
+                    if (gruppo.oggetti.length > 0) {
+                        const randomIndex = Math.floor(Math.random() * gruppo.oggetti.length);
+                        const oggettoScelto = gruppo.oggetti[randomIndex];
+                        risultati.push({
+                            tipologia: gruppo.nome,
+                            oggetto: oggettoScelto
+                        });
+                    }
+                }
+
+                // Mostra i risultati
+                mostraRisultatiRandomizzazione(risultati);
+                showToast(`Estratti ${risultati.length} oggetti casuali!`);
+
+            } catch (error) {
+                console.error('Errore nella randomizzazione:', error);
+                alert('Errore durante la randomizzazione degli oggetti');
+            } finally {
+                // Riabilita il bottone e nascondi loading
+                btn.disabled = false;
+                loading.style.display = 'none';
+                diceIcon.classList.remove('dice-animation');
+            }
+        }
+
+        function mostraRisultatiRandomizzazione(risultati) {
+            const sezione = document.getElementById('risultatiSection');
+            const contenitore = document.getElementById('risultatiRandomizzazione');
+            
+            if (risultati.length === 0) {
+                contenitore.innerHTML = `
+                    <div class="alert alert-warning">
+                        <i class="bi bi-exclamation-triangle"></i>
+                        Nessun oggetto trovato per le tipologie di questa area.
+                    </div>
+                `;
+            } else {
+                contenitore.innerHTML = risultati.map(risultato => `
+                    <div class="random-result pulse-effect">
+                        <h5>
+                            <i class="bi bi-tag"></i>
+                            ${risultato.tipologia}
+                        </h5>
+                        <div class="object-name">
+                            <i class="bi bi-star-fill text-warning"></i>
+                            ${risultato.oggetto.nome}
+                        </div>
+                    </div>
+                `).join('');
+            }
+            
+            // Mostra la sezione risultati
+            sezione.style.display = 'block';
+            
+            // Scroll verso i risultati
+            sezione.scrollIntoView({ behavior: 'smooth' });
         }
 
         // --- INIZIALIZZAZIONE ---
